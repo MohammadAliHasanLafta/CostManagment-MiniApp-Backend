@@ -9,6 +9,10 @@ namespace CostManagment.Domain.Entities;
 
 public class Wage : EntityBase
 {
+    public Wage()
+    {
+    }
+
     public Wage(int salary, long? userId = null, string? userPhoneNumber = null)
     {
         if (string.IsNullOrWhiteSpace(userPhoneNumber) && userId == null)

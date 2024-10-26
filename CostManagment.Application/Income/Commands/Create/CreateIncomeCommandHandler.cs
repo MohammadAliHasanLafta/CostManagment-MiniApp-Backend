@@ -20,7 +20,7 @@ public class CreateIncomeCommandHandler : IRequestHandler<CreateIncomeCommand, l
 
     public async Task<long> Handle(CreateIncomeCommand request, CancellationToken cancellationToken)
     {
-        var result = await _costRepository.CreateIncomeAsync(new Wage(request.Salary, request.UserId, request.PhoneNumber));
+        var result = await _costRepository.CreateIncomeAsync(request.Salary, request.UserId, request.PhoneNumber);
 
         return result;
     }

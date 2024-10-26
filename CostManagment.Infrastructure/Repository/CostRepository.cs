@@ -1,4 +1,5 @@
-﻿using CostManagment.Domain.Entities;
+﻿using AutoMapper;
+using CostManagment.Domain.Entities;
 using CostManagment.Domain.Interfaces;
 using CostManagment.Infrastructure.Data;
 
@@ -13,18 +14,23 @@ public class CostRepository : ICostRepository
         _context = context;
     }
 
-    public async Task<long> CreateIncomeAsync(Wage model)
+    public async Task<long> CreateIncomeAsync(int salary, long userId, string phoneNumber)
     {
-        var income = _context.Incomes.FirstOrDefault(i => i.UserId == model.UserId || i.UserPhoneNumber == model.UserPhoneNumber);
+        var income = new Wage();
+        if (userId > 0)
+            income = _context.Incomes.FirstOrDefault(i => i.UserId == userId);
+        else
+            income = _context.Incomes.FirstOrDefault(i => i.UserPhoneNumber == phoneNumber);
+
         if (income == null)
         {
-            var entity = _context.Incomes.Add(model);
-            _context.SaveChanges();
+            var entity = _context.Incomes.Add(new Wage(salary, userId, phoneNumber));
+            await _context.SaveChangesAsync();
 
             return entity.Entity.Id;
         }
 
-        income.Salary = model.Salary;
+        income.Salary = salary;
         _context.SaveChanges();
 
         return income.Id;
@@ -86,10 +92,15 @@ public class CostRepository : ICostRepository
 
     public async Task<int> GetSalaryAsync(long id, string phoneNumber)
     {
-        var income = _context.Incomes.FirstOrDefault(i => i.UserId == id || i.UserPhoneNumber == phoneNumber);
-        if (income == null)
+        var Salary = 0;
+        if (id > 0)
+            Salary = _context.Incomes.FirstOrDefault(i => i.UserId == id).Salary;
+        else
+            Salary = _context.Incomes.FirstOrDefault(i => i.UserPhoneNumber == phoneNumber).Salary;
+
+        if (Salary < 0)
             return 0;
 
-        return income.Salary;
+        return Salary;
     }
 }

@@ -6,7 +6,7 @@ namespace CostManagment.Domain.Interfaces;
 public interface ICostRepository
 {
     Task<int> GetSalaryAsync(long id, string phoneNumber);
-    Task<long> CreateIncomeAsync(Wage model);
+    Task<long> CreateIncomeAsync(int salary, long userId, string phoneNumber);
     Task<long> CreateAsync(Expense model);
     Task<bool> UpdateAsync(long id, string title, int amount);
     Task<bool> DeleteAsync(long id);
