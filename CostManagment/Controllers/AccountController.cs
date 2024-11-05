@@ -71,6 +71,54 @@ public class AccountController : ControllerBase
         return Unauthorized("Invalid data.");
     }
 
+    [HttpPost("verify-contact")]
+    public async Task<IActionResult> ValidateEitaaContact([FromBody] VerifyContactDto dto)
+    {
+        var initData = _accountRepository.ParseUrlEncodedData(dto.ContactRequest);
+        var botToken = _accountRepository.GetBotToken();
+
+        if (!initData.TryGetValue("hash", out string receivedHash))
+        {
+            return BadRequest("Missing 'hash' parameter.");
+        }
+
+        initData.Remove("hash");
+
+        var sortedData = initData.OrderBy(kvp => kvp.Key);
+
+        var dataCheckString = string.Join("\n", sortedData.Select(kvp => $"{kvp.Key}={kvp.Value}"));
+
+        var secretKey = _accountRepository.GenerateHmacSha256("WebAppData", botToken);
+
+        var generatedHash = _accountRepository.GenerateHmacSha256(secretKey, dataCheckString);
+
+        if (CryptographicOperations.FixedTimeEquals(
+            Encoding.UTF8.GetBytes(generatedHash), Encoding.UTF8.GetBytes(receivedHash)))
+        {
+            var user = await _accountRepository.GetContactById(dto.UserId);
+
+            if (user != null)
+            {
+                user.ContactRequest = dto.ContactRequest;
+                user.Mobile = dto.Mobile;
+                user.IsValid = true;
+                user.UpdatedAt = DateTime.Now;
+
+                await _accountRepository.SaveChangesAsync();
+            }
+            else
+            {
+                user = new MiniAppUserContact(dto.UserId, dto.ContactRequest, dto.Mobile, true);
+
+                await _accountRepository.AddContactAsync(user);
+            }
+
+            return Ok("success verify!");
+        }
+
+        return Unauthorized("Invalid data.");
+    }
+
     [HttpPost("send-otp")]
     public async Task<IActionResult> SendOtp([FromBody] SendOtpDto dto)
     {
@@ -101,5 +149,16 @@ public class AccountController : ControllerBase
 
         var token = _tokenService.CreateToken(null, user);
         return Ok(new { Token = token });
+    }
+
+    [HttpGet("get-miniappuser-mobile")]
+    public async Task<IActionResult> GetMiniAppUserMobile([FromQuery] long UserId)
+    {
+        var mobile = await _accountRepository.GetUserMobile(UserId);
+
+        if (mobile == null)
+            return Ok(false);
+
+        return Ok(mobile);
     }
 }

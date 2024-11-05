@@ -89,4 +89,25 @@ public class AccountRepository : IAccountRepository
         var query = HttpUtility.ParseQueryString(encodedData);
         return query.AllKeys.ToDictionary(key => key, key => query[key]);
     }
+
+    public async Task AddContactAsync(MiniAppUserContact contact)
+    {
+        await _context.Contacts.AddAsync(contact);
+        await SaveChangesAsync();
+    }
+
+    public async Task<MiniAppUserContact> GetContactById(long userId)
+    {
+        return _context.Contacts.AsNoTracking().FirstOrDefault(u => u.UserId == userId);
+    }
+
+    public async Task<string> GetUserMobile(long userId)
+    {
+        var user = await _context.Contacts.FirstOrDefaultAsync(c => c.UserId == userId);
+
+        if (user == null)
+            return null;
+
+        return user.Mobile;
+    }
 }

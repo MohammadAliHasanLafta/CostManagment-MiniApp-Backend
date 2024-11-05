@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
     public DbSet<MiniAppUser> MiniAppUsers { get; set; }
     public DbSet<WebAppUser> WebAppUsers { get; set; }
     public DbSet<UserProfile> Profiles { get; set; }
+    public DbSet<MiniAppUserContact> Contacts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
