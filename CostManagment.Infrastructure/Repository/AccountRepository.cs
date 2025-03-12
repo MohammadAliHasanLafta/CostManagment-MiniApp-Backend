@@ -16,6 +16,7 @@ public class AccountRepository : IAccountRepository
 {
     private readonly AppDbContext _context;
     private readonly string _eitaaToken = "60315926:,g8kEFWB1-Y)c(FzVhp-QJB9CKwaW-mD(KG[PyM-m@GJId[$x-t*CurXQ?d-jUseEjgf0-@8Yv/H1Hn-Xgef3Nq9r-6T94&lhpa-5Bbxh3q%O-!KIlELG8Y-a{AzSPzNp-1P2U06^xJ-L6lXja24v-CAVQAx]UR-^#EHKW]vq-soEDS.h}R-3L2iRuxnc-WqMs~pGr";
+    private readonly string _eitaaToken_Bahesabsho = "61471346:YXMocjc-@13cBKs-TBW*va1-/3jyme6-dxx7i#f-l&$seMR-!uvl*0n-tEr9nwJ-zTsH8F)-~fyAp7A-5aSHX1.-QtD{NO9-ww)MK4W-xPdP2cQ-oqe$Ik0-lW4ReFS-ShZVGP8-3O8CgVh-b0fS[4y-hQHRVxX-TH7vBgR-^iU6JuN-FrKfggb-6t";
 
     public AccountRepository(AppDbContext context)
     {
@@ -25,6 +26,11 @@ public class AccountRepository : IAccountRepository
     public string GetBotToken()
     {
         return _eitaaToken;
+    }
+
+    public string GetBotToken_Bahesabsho()
+    {
+        return _eitaaToken_Bahesabsho;
     }
 
     public async Task SaveChangesAsync()
